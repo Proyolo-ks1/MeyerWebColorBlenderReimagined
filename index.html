@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f5f5f5" />
+    <meta name="description" content="A modern reimagining of MeyerWeb's classic Color Blender." />
+    <title>Color Blender — Reimagined</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="script.js" defer></script>
+  </head>
+  <body>
+    <main class="app">
+      <header class="header">
+        <div>
+          <p class="eyebrow">MEYERWEB · REIMAGINED</p>
+          <h1>Color Blender</h1>
+          <p class="subtitle">Create smooth color transitions between two colors.</p>
+        </div>
+        <a class="original-link" href="https://meyerweb.com/eric/tools/color-blend/" target="_blank" rel="noreferrer"> Original project <span aria-hidden="true">↗</span> </a>
+      </header>
+
+      <section class="workspace" aria-label="Color blender">
+        <section class="panel controls-panel">
+          <div class="section-heading">
+            <div>
+              <h2>Choose your colors</h2>
+            </div>
+          </div>
+
+          <div class="color-inputs">
+            <div class="color-field">
+              <label for="color-a">Color 1</label>
+              <div class="color-control">
+                <div class="picker-wrap">
+                  <button class="color-swatch" id="custom-picker-a" type="button" aria-label="Choose color 1"></button>
+                  <div class="color-popover" id="popover-a" hidden>
+                    <div class="color-plane" role="slider" tabindex="0" aria-label="Saturation and lightness"></div>
+                    <label class="hue-control">Hue<input class="hue-slider" type="range" min="0" max="360" value="220" aria-label="Hue"></label>
+                    <button class="native-picker-button" type="button">Use browser color picker</button>
+                  </div>
+                  <input class="native-color-input" id="picker-a" type="color" value="#3867d6" aria-label="Browser color picker for color 1" />
+                </div>
+                <input class="color-value" id="color-a" type="text" value="#3867D6" spellcheck="false" autocomplete="off" />
+              </div>
+            </div>
+            <button class="swap-button" id="swap-colors" type="button" aria-label="Swap colors" title="Swap colors">⇄</button>
+            <div class="color-field">
+              <label for="color-b">Color 2</label>
+              <div class="color-control">
+                <div class="picker-wrap">
+                  <button class="color-swatch" id="custom-picker-b" type="button" aria-label="Choose color 2"></button>
+                  <div class="color-popover" id="popover-b" hidden>
+                    <div class="color-plane" role="slider" tabindex="0" aria-label="Saturation and lightness"></div>
+                    <label class="hue-control">Hue<input class="hue-slider" type="range" min="0" max="360" value="345" aria-label="Hue"></label>
+                    <button class="native-picker-button" type="button">Use browser color picker</button>
+                  </div>
+                  <input class="native-color-input" id="picker-b" type="color" value="#eb3b5a" aria-label="Browser color picker for color 2" />
+                </div>
+                <input class="color-value" id="color-b" type="text" value="#EB3B5A" spellcheck="false" autocomplete="off" />
+              </div>
+            </div>
+          </div>
+          <p class="input-error" id="input-error" role="alert" aria-live="polite"></p>
+
+          <div class="settings">
+            <div class="setting">
+              <label for="steps">Intermediate colors</label>
+              <div class="step-control">
+                <input id="steps" type="range" min="1" max="16" value="5" aria-label="Intermediate colors slider" />
+                <input id="steps-number" type="number" min="1" value="5" aria-label="Number of intermediate colors" />
+              </div>
+            </div>
+            <div class="setting">
+              <label for="interpolation">Interpolation</label>
+              <select id="interpolation">
+                <option value="rgb">RGB</option>
+                <option value="hsl">HSL</option>
+              </select>
+            </div>
+          </div>
+          <div class="actions">
+            <button class="button button-secondary" id="reset" type="button">Reset</button>
+            <button class="button button-primary" id="copy-all" type="button">Copy palette</button>
+          </div>
+        </section>
+
+        <section class="panel palette-panel">
+          <div class="section-heading palette-heading">
+            <div>
+              <h2>Your palette</h2>
+            </div>
+            <span class="palette-count" id="palette-count">7 colors</span>
+          </div>
+          <div class="palette-strips" aria-label="Color transition previews">
+            <div class="gradient-strip" id="gradient-strip" role="img" aria-label="Smooth color gradient"></div>
+            <div class="steps-strip" id="steps-strip" role="img" aria-label="Discrete palette colors"></div>
+          </div>
+          <div class="palette" id="palette" aria-live="polite"></div>
+          <p class="palette-hint">Select a color to copy its HEX value.</p>
+        </section>
+      </section>
+
+      <footer class="footer">
+        <span>Independent adaptation of Eric A. Meyer's Color Blender.</span>
+        <a href="https://creativecommons.org/licenses/by-sa/1.0/" target="_blank" rel="noreferrer">CC BY-SA 1.0</a>
+      </footer>
+      <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    </main>
+  </body>
+</html>
