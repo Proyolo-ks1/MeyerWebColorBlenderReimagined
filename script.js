@@ -136,6 +136,21 @@ function getPalette(start, end, steps, mode) {
     return colors;
 }
 
+function getGradientStops(start, end, mode) {
+    const sampleCount = 100;
+    return Array.from({ length: sampleCount + 1 }, (_, index) => {
+        const position = index / sampleCount;
+        const color = index === 0
+            ? toHex(start)
+            : index === sampleCount
+                ? toHex(end)
+                : toHex(mode === 'hsl'
+                    ? interpolateHsl(start, end, position)
+                    : interpolateRgb(start, end, position));
+        return `${color} ${position * 100}%`;
+    }).join(', ');
+}
+
 function updateColorPicker(textInput, picker) {
     const color = parseHex(textInput.value);
     if (color) picker.value = toHex(color);
@@ -190,7 +205,8 @@ function renderPalette() {
 
     const colors = getPalette(start, end, Number(elements.stepsNumber.value), elements.interpolation.value);
     elements.paletteCount.textContent = `${colors.length} colors`;
-    elements.gradientStrip.style.background = `linear-gradient(90deg, ${toHex(start)}, ${toHex(end)})`;
+    const mode = elements.interpolation.value;
+    elements.gradientStrip.style.background = `linear-gradient(90deg, ${getGradientStops(start, end, mode)})`;
     const stripFragment = document.createDocumentFragment();
     colors.forEach(color => {
         const segment = document.createElement('span');

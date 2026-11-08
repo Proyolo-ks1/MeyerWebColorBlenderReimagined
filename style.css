@@ -372,6 +372,7 @@ select {
 
 .gradient-strip {
     display: block;
+    border: 0;
 }
 
 .steps-strip span {
