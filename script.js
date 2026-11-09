@@ -29,6 +29,12 @@ const elements = {
     toChartTitle: document.querySelector('#to-chart-title'),
     fromChartScale: document.querySelector('#from-chart-scale'),
     toChartScale: document.querySelector('#to-chart-scale'),
+    themeToggle: document.querySelector('#theme-toggle'),
+    themeToggleIcon: document.querySelector('#theme-toggle-icon'),
+    themeToggleLabel: document.querySelector('#theme-toggle-label'),
+    gradientToggle: document.querySelector('#gradient-toggle'),
+    gradientToggleLabel: document.querySelector('#gradient-toggle-label'),
+    themeColor: document.querySelector('meta[name="theme-color"]'),
     error: document.querySelector('#input-error'),
     toast: document.querySelector('#toast')
 };
@@ -39,6 +45,41 @@ const pickerPairs = [
 ];
 
 let toastTimeout;
+let gradientBackgroundEnabled = true;
+let pageGradientColors = [];
+
+function setTheme(isDark) {
+    document.documentElement.dataset.theme = isDark ? 'dark' : 'light';
+    elements.themeToggle.setAttribute('aria-pressed', String(isDark));
+    elements.themeToggle.setAttribute('aria-label', `Switch to ${isDark ? 'light' : 'dark'} mode`);
+    elements.themeToggleIcon.textContent = isDark ? '☀' : '☾';
+    elements.themeToggleLabel.textContent = isDark ? 'Light mode' : 'Dark mode';
+    elements.themeColor.content = isDark ? '#151821' : '#f5f5f2';
+}
+
+function updatePageGradient(colors) {
+    pageGradientColors = colors;
+    const usesRebeccaPurple = [elements.colorA.value, elements.colorB.value].some(value => {
+        const color = parseHex(value);
+        return color && toHex(color) === '#663399';
+    });
+    document.documentElement.dataset.rebecca = String(usesRebeccaPurple);
+
+    if (!gradientBackgroundEnabled || !colors.length) {
+        document.body.style.backgroundImage = 'none';
+        return;
+    }
+
+    const stopCount = Math.min(9, colors.length);
+    const stops = Array.from({ length: stopCount }, (_, index) => {
+        const colorIndex = Math.round(index * (colors.length - 1) / Math.max(1, stopCount - 1));
+        const { r, g, b } = parseHex(colors[colorIndex]);
+        const position = index * 100 / Math.max(1, stopCount - 1);
+        const opacity = usesRebeccaPurple && colors[colorIndex] === '#663399' ? 0.38 : 0.17;
+        return `rgba(${r}, ${g}, ${b}, ${opacity}) ${position}%`;
+    });
+    document.body.style.backgroundImage = `linear-gradient(135deg, ${stops.join(', ')})`;
+}
 
 function parseHex(value) {
     const normalized = value.trim().replace(/^#/, '');
@@ -640,6 +681,7 @@ function renderPalette() {
     });
 
     const colors = getPalette(start, end, Number(elements.stepsNumber.value), from, to, mix);
+    updatePageGradient(colors);
     elements.paletteCount.textContent = `${colors.length} colors`;
     elements.gradientStrip.style.background = `linear-gradient(90deg, ${getGradientStops(start, end, from, to, mix)})`;
     const steps = Number(elements.stepsNumber.value);
@@ -784,6 +826,14 @@ pickerPairs.forEach(pair => {
         event.preventDefault();
         updateFromCustomPicker(pair, hue, saturation, value);
     });
+    popover.querySelector('.rebecca-color-button').addEventListener('click', () => {
+        const rebeccaPurple = rgbToHsv(parseHex('#663399'));
+        hue = rebeccaPurple.h;
+        saturation = rebeccaPurple.s;
+        value = rebeccaPurple.v;
+        hueSlider.value = hue;
+        updateFromCustomPicker(pair, hue, saturation, value);
+    });
     popover.querySelector('.native-picker-button').addEventListener('click', () => native.click());
     native.addEventListener('input', () => {
         text.value = native.value.toUpperCase();
@@ -819,6 +869,16 @@ elements.stepsNumber.addEventListener('change', () => {
 elements.interpolationFrom.addEventListener('change', renderPalette);
 elements.interpolationTo.addEventListener('change', renderPalette);
 elements.interpolationMix.addEventListener('input', renderPalette);
+elements.themeToggle.addEventListener('click', () => {
+    setTheme(document.documentElement.dataset.theme !== 'dark');
+});
+elements.gradientToggle.addEventListener('click', () => {
+    gradientBackgroundEnabled = !gradientBackgroundEnabled;
+    elements.gradientToggle.setAttribute('aria-pressed', String(gradientBackgroundEnabled));
+    elements.gradientToggle.setAttribute('aria-label', `${gradientBackgroundEnabled ? 'Disable' : 'Enable'} gradient background`);
+    elements.gradientToggleLabel.textContent = `Gradient: ${gradientBackgroundEnabled ? 'On' : 'Off'}`;
+    updatePageGradient(pageGradientColors);
+});
 
 document.querySelector('#swap-colors').addEventListener('click', () => {
     [elements.colorA.value, elements.colorB.value] =
@@ -836,5 +896,6 @@ document.querySelector('#copy-all').addEventListener('click', () => {
     if (colors.length) copyText(colors.join('\n'));
 });
 
+setTheme(false);
 loadHash();
 renderPalette();

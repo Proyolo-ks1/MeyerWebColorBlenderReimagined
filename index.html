@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#f5f5f5" />
+    <meta name="theme-color" content="#f5f5f2" />
     <meta name="description" content="A modern reimagining of MeyerWeb's classic Color Blender." />
     <title>Color Blender — Reimagined</title>
     <link rel="stylesheet" href="style.css" />
@@ -13,11 +13,22 @@
     <main class="app">
       <header class="header">
         <div>
-          <p class="eyebrow">MEYERWEB · REIMAGINED</p>
+          <div class="brand-line">
+            <p class="eyebrow">MEYERWEB · REIMAGINED</p>
+            <a class="original-link" href="https://meyerweb.com/eric/tools/color-blend/" target="_blank" rel="noreferrer">Original project <span aria-hidden="true">↗</span></a>
+          </div>
           <h1>Color Blender</h1>
           <p class="subtitle">Create smooth color transitions between two colors.</p>
         </div>
-        <a class="original-link" href="https://meyerweb.com/eric/tools/color-blend/" target="_blank" rel="noreferrer"> Original project <span aria-hidden="true">↗</span> </a>
+        <div class="header-controls" aria-label="Appearance settings">
+          <button class="header-toggle" id="theme-toggle" type="button" aria-pressed="false" aria-label="Switch to dark mode">
+            <span id="theme-toggle-icon" aria-hidden="true">◐</span>
+            <span id="theme-toggle-label">Dark mode</span>
+          </button>
+          <button class="header-toggle" id="gradient-toggle" type="button" aria-pressed="true" aria-label="Disable gradient background">
+            <span id="gradient-toggle-label">Gradient: On</span>
+          </button>
+        </div>
       </header>
 
       <section class="workspace" aria-label="Color blender">
@@ -37,6 +48,7 @@
                   <div class="color-popover" id="popover-a" hidden>
                     <div class="color-plane" role="slider" tabindex="0" aria-label="Saturation and brightness"></div>
                     <label class="hue-control">Hue<input class="hue-slider" type="range" min="0" max="360" value="220" aria-label="Hue"></label>
+                    <button class="rebecca-color-button" type="button" aria-label="Apply Rebecca Purple (#663399)"><span class="rebecca-color-chip" aria-hidden="true"></span><span>Use Rebecca Purple</span><code>#663399</code></button>
                     <button class="native-picker-button" type="button">Use browser color picker</button>
                   </div>
                   <input class="native-color-input" id="picker-a" type="color" value="#3867d6" aria-label="Browser color picker for color 1" />
@@ -53,6 +65,7 @@
                   <div class="color-popover" id="popover-b" hidden>
                     <div class="color-plane" role="slider" tabindex="0" aria-label="Saturation and brightness"></div>
                     <label class="hue-control">Hue<input class="hue-slider" type="range" min="0" max="360" value="345" aria-label="Hue"></label>
+                    <button class="rebecca-color-button" type="button" aria-label="Apply Rebecca Purple (#663399)"><span class="rebecca-color-chip" aria-hidden="true"></span><span>Use Rebecca Purple</span><code>#663399</code></button>
                     <button class="native-picker-button" type="button">Use browser color picker</button>
                   </div>
                   <input class="native-color-input" id="picker-b" type="color" value="#eb3b5a" aria-label="Browser color picker for color 2" />
