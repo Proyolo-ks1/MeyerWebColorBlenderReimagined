@@ -72,17 +72,53 @@
               </div>
             </div>
             <div class="setting">
-              <label for="interpolation">Interpolation</label>
-              <select id="interpolation">
-                <option value="rgb">RGB</option>
-                <option value="hsl">HSL</option>
-              </select>
+              <label for="interpolation-mix">Interpolation blend</label>
+              <div class="interpolation-blend">
+                <select id="interpolation-from" aria-label="First interpolation style">
+                  <option value="rgb">RGB</option>
+                  <option value="linear-rgb">Linear RGB</option>
+                  <option value="hsl">HSL</option>
+                  <option value="hsv">HSV</option>
+                  <option value="hwb">HWB</option>
+                  <option value="lab">Lab</option>
+                  <option value="lch">LCH</option>
+                  <option value="oklab">OKLab</option>
+                  <option value="oklch">OKLCH</option>
+                </select>
+                <div class="blend-range-control">
+                  <input id="interpolation-mix" type="range" min="0" max="100" value="0" aria-label="Blend between interpolation styles" />
+                  <output id="interpolation-mix-value" for="interpolation-mix">0%</output>
+                </div>
+                <select id="interpolation-to" aria-label="Second interpolation style">
+                  <option value="hsl" selected>HSL</option>
+                  <option value="rgb">RGB</option>
+                  <option value="linear-rgb">Linear RGB</option>
+                  <option value="hsv">HSV</option>
+                  <option value="hwb">HWB</option>
+                  <option value="lab">Lab</option>
+                  <option value="lch">LCH</option>
+                  <option value="oklab">OKLab</option>
+                  <option value="oklch">OKLCH</option>
+                </select>
+              </div>
             </div>
           </div>
           <div class="actions">
             <button class="button button-secondary" id="reset" type="button">Reset</button>
             <button class="button button-primary" id="copy-all" type="button">Copy palette</button>
           </div>
+          <section class="interpolation-charts" aria-label="Interpolation channel graphs">
+            <figure class="channel-chart">
+              <figcaption id="from-chart-title">From: RGB channels</figcaption>
+              <svg id="from-chart" viewBox="0 0 340 250" role="img" aria-label="From-space channel values across the current palette"></svg>
+              <p id="from-chart-scale">R/G/B: 0–255</p>
+            </figure>
+            <figure class="channel-chart">
+              <figcaption id="to-chart-title">To: HSL channels</figcaption>
+              <svg id="to-chart" viewBox="0 0 340 250" role="img" aria-label="To-space channel values across the current palette"></svg>
+              <p id="to-chart-scale">H: 0–360° · S/L: 0–100%</p>
+            </figure>
+          </section>
         </section>
 
         <section class="panel palette-panel">

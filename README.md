@@ -8,7 +8,8 @@ The original Color Blender introduced a simple way to generate intermediate colo
 
 - Blend between two colors.
 - Choose the number of intermediate colors.
-- Switch between RGB and HSL interpolation.
+- Blend between RGB, Linear RGB, HSL, HSV, HWB, Lab, LCH, OKLab, and OKLCH interpolation styles.
+- Compare channel graphs for the selected from/to spaces, including intermediate-color positions.
 - Edit colors using HEX fields or the custom color picker, with an option to open the browser's native picker.
 - Copy individual color values.
 - Share a palette through its URL.
