@@ -4,6 +4,14 @@ A modern, independent adaptation of [Eric A. Meyer's original Color Blender](htt
 
 The original Color Blender introduced a simple way to generate intermediate colors between two endpoints. This project preserves that core idea while rebuilding the interface and code with modern web technologies.
 
+## Explore the Website
+
+[![MeyerWeb Color Blender Reimagined Preview](Assets/images/MeyerWebColorBlenderReimaginedPreview.png)](https://proyolo-ks1.github.io/MeyerWebColorBlenderReimagined/)
+
+**[Open MeyerWeb Color Blender Reimagined](https://proyolo-ks1.github.io/MeyerWebColorBlenderReimagined/)**
+
+No installation required. Explore directly in your browser.
+
 ## Features
 
 - Blend between two colors.

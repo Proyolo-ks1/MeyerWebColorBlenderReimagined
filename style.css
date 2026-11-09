@@ -187,7 +187,7 @@ h2 {
 .color-plane::after {
     position: absolute;
     left: var(--sat, 100%);
-    top: var(--light, 50%);
+    top: var(--value, 50%);
     width: 13px;
     height: 13px;
     border: 2px solid white;

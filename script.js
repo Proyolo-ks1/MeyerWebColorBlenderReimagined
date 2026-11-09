@@ -725,12 +725,12 @@ elements.colorB.addEventListener('input', renderPalette);
 elements.colorA.addEventListener('change', () => updateColorPicker(elements.colorA, elements.pickerA));
 elements.colorB.addEventListener('change', () => updateColorPicker(elements.colorB, elements.pickerB));
 
-function updateFromCustomPicker(pair, hue, saturation, lightness) {
-    pair.text.value = toHex(hslToRgb({ h: hue, s: saturation, l: lightness }));
+function updateFromCustomPicker(pair, hue, saturation, value) {
+    pair.text.value = toHex(hsvToRgb({ h: hue, s: saturation, v: value }));
     pair.popover.querySelector('.color-plane').style.setProperty('--hue', hue);
     pair.popover.querySelector('.color-plane').style.setProperty('--sat', `${saturation * 100}%`);
-    pair.popover.querySelector('.color-plane').style.setProperty('--light', `${(1 - lightness) * 100}%`);
-    pair.popover.querySelector('.color-plane').setAttribute('aria-valuetext', `${Math.round(saturation * 100)}% saturation, ${Math.round(lightness * 100)}% lightness`);
+    pair.popover.querySelector('.color-plane').style.setProperty('--value', `${(1 - value) * 100}%`);
+    pair.popover.querySelector('.color-plane').setAttribute('aria-valuetext', `${Math.round(saturation * 100)}% saturation, ${Math.round(value * 100)}% brightness`);
     renderPalette();
 }
 
@@ -740,7 +740,7 @@ pickerPairs.forEach(pair => {
     const hueSlider = popover.querySelector('.hue-slider');
     let hue = Number(hueSlider.value);
     let saturation = 1;
-    let lightness = 0.5;
+    let value = 0.5;
 
     button.addEventListener('click', () => {
         document.querySelectorAll('.color-popover').forEach(item => { if (item !== popover) item.hidden = true; });
@@ -749,28 +749,28 @@ pickerPairs.forEach(pair => {
         if (!opening) return;
         const rgb = parseHex(text.value);
         if (rgb) {
-            const hsl = rgbToHsl(rgb);
-            hue = hsl.h;
-            saturation = hsl.s;
-            lightness = hsl.l;
+            const hsv = rgbToHsv(rgb);
+            hue = hsv.h;
+            saturation = hsv.s;
+            value = hsv.v;
             hueSlider.value = hue;
             plane.style.setProperty('--hue', hue);
             plane.style.setProperty('--sat', `${saturation * 100}%`);
-            plane.style.setProperty('--light', `${(1 - lightness) * 100}%`);
+            plane.style.setProperty('--value', `${(1 - value) * 100}%`);
         }
     });
 
     hueSlider.addEventListener('input', () => {
         hue = Number(hueSlider.value);
         plane.style.setProperty('--hue', hue);
-        updateFromCustomPicker(pair, hue, saturation, lightness);
+        updateFromCustomPicker(pair, hue, saturation, value);
     });
 
     const pickOnPlane = event => {
         const rect = plane.getBoundingClientRect();
         saturation = Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width));
-        lightness = 1 - Math.max(0, Math.min(1, (event.clientY - rect.top) / rect.height));
-        updateFromCustomPicker(pair, hue, saturation, lightness);
+        value = 1 - Math.max(0, Math.min(1, (event.clientY - rect.top) / rect.height));
+        updateFromCustomPicker(pair, hue, saturation, value);
     };
     plane.addEventListener('pointerdown', event => { plane.setPointerCapture(event.pointerId); pickOnPlane(event); });
     plane.addEventListener('pointermove', event => { if (plane.hasPointerCapture(event.pointerId)) pickOnPlane(event); });
@@ -778,11 +778,11 @@ pickerPairs.forEach(pair => {
         const delta = event.shiftKey ? 0.05 : 0.01;
         if (event.key === 'ArrowRight') saturation = Math.min(1, saturation + delta);
         else if (event.key === 'ArrowLeft') saturation = Math.max(0, saturation - delta);
-        else if (event.key === 'ArrowUp') lightness = Math.min(1, lightness + delta);
-        else if (event.key === 'ArrowDown') lightness = Math.max(0, lightness - delta);
+        else if (event.key === 'ArrowUp') value = Math.min(1, value + delta);
+        else if (event.key === 'ArrowDown') value = Math.max(0, value - delta);
         else return;
         event.preventDefault();
-        updateFromCustomPicker(pair, hue, saturation, lightness);
+        updateFromCustomPicker(pair, hue, saturation, value);
     });
     popover.querySelector('.native-picker-button').addEventListener('click', () => native.click());
     native.addEventListener('input', () => {
