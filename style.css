@@ -93,7 +93,7 @@ body {
     min-width: 320px;
     min-height: 100vh;
     margin: 0;
-    padding: 56px 24px;
+    padding: clamp(20px, 5.2vh, 56px) 24px;
     background-color: var(--page-bg);
     background-attachment: fixed;
     transition: background-color .2s ease;
@@ -113,7 +113,7 @@ button, input, select {
     justify-content: space-between;
     align-items: flex-start;
     gap: 24px;
-    margin-bottom: 36px;
+    margin-bottom: clamp(20px, 3.3vh, 36px);
 }
 
 .brand-line {
@@ -129,6 +129,18 @@ button, input, select {
     font-size: 11px;
     font-weight: 700;
     letter-spacing: .13em;
+}
+
+.eyebrow a {
+    color: inherit;
+    text-decoration: underline;
+    text-decoration-color: color-mix(in srgb, var(--link) 55%, transparent);
+    text-decoration-thickness: .75px;
+    text-underline-offset: 2px;
+}
+
+.eyebrow a:hover {
+    text-decoration-color: var(--link);
 }
 
 h1, h2 {
@@ -206,7 +218,7 @@ h2 {
 
 .panel {
     min-width: 0;
-    padding: 26px;
+    padding: clamp(18px, 2.4vh, 26px);
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 16px;
@@ -214,7 +226,7 @@ h2 {
 }
 
 .section-heading {
-    margin-bottom: 26px;
+    margin-bottom: clamp(16px, 2.4vh, 26px);
 }
 
 .color-inputs {
@@ -432,6 +444,11 @@ h2 {
     gap: 12px;
 }
 
+.step-control input[type="range"] {
+    min-width: 50px;
+    flex: 1;
+}
+
 input[type="range"] {
     width: 100%;
     accent-color: var(--accent);
@@ -462,7 +479,7 @@ select {
 
 .interpolation-blend {
     display: grid;
-    grid-template-columns: minmax(76px, 1fr) minmax(90px, 1.2fr) minmax(76px, 1fr);
+    grid-template-columns: minmax(76px, 1fr) minmax(164px, 1.2fr) minmax(76px, 1fr);
     align-items: center;
     gap: 7px;
 }
@@ -480,7 +497,7 @@ select {
 }
 
 .blend-range-control input[type="range"] {
-    min-width: 0;
+    min-width: 50px;
     flex: 1;
 }
 
@@ -496,22 +513,22 @@ select {
     display: flex;
     justify-content: flex-end;
     gap: 9px;
-    margin-top: 27px;
+    margin-top: clamp(16px, 2.5vh, 27px);
 }
 
 .interpolation-charts {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 12px;
-    margin-top: 26px;
-    padding-top: 20px;
+    margin-top: clamp(16px, 2.4vh, 26px);
+    padding-top: clamp(12px, 1.85vh, 20px);
     border-top: 1px solid var(--border);
 }
 
 .channel-chart {
     min-width: 0;
     margin: 0;
-    padding: 12px 10px 9px;
+    padding: clamp(8px, 1.2vh, 12px) 10px 9px;
     border: 1px solid var(--chart-border);
     border-radius: 11px;
     background: var(--chart-card);
@@ -757,7 +774,7 @@ select {
 
 .swatch-color {
     display: block;
-    height: 112px;
+    height: clamp(78px, 10.4vh, 112px);
 }
 
 .swatch-label {
@@ -779,7 +796,7 @@ select {
     display: flex;
     justify-content: space-between;
     gap: 16px;
-    margin-top: 22px;
+    margin-top: clamp(14px, 2vh, 22px);
     color: var(--muted);
     font-size: 11px;
 }
@@ -802,6 +819,63 @@ select {
 .toast.visible {
     transform: translate(-50%, 0);
     opacity: 1;
+}
+
+@media (max-width: 1250px) {
+    .settings {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (min-width: 761px) and (max-height: 960px) {
+    body {
+        padding: 14px 20px;
+    }
+
+    .header {
+        margin-bottom: clamp(12px, 2vh, 20px);
+    }
+
+    .panel {
+        padding: clamp(12px, 1.8vh, 18px);
+    }
+
+    .section-heading {
+        margin-bottom: clamp(12px, 1.8vh, 18px);
+    }
+
+    .actions {
+        margin-top: clamp(12px, 1.8vh, 18px);
+    }
+
+    .interpolation-charts {
+        margin-top: clamp(10px, 1.6vh, 16px);
+        padding-top: clamp(8px, 1.3vh, 12px);
+    }
+
+    .channel-chart {
+        padding: 7px 8px 6px;
+    }
+
+    .channel-chart figcaption {
+        margin-bottom: 4px;
+    }
+
+    .channel-chart > p {
+        margin-top: 0;
+    }
+
+    .swatch-color {
+        height: clamp(62px, 8vh, 82px);
+    }
+
+    .palette {
+        gap: 7px;
+    }
+
+    .footer {
+        margin-top: clamp(8px, 1.2vh, 12px);
+    }
 }
 
 @media (max-width: 760px) {
@@ -851,6 +925,26 @@ select {
     .settings {
         grid-template-columns: 1fr;
         gap: 16px;
+    }
+
+    .interpolation-blend {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        gap: 8px;
+    }
+
+    .interpolation-blend select:first-child {
+        grid-column: 1;
+        grid-row: 1;
+    }
+
+    .blend-range-control {
+        grid-column: 1 / -1;
+        grid-row: 2;
+    }
+
+    .interpolation-blend select:last-child {
+        grid-column: 2;
+        grid-row: 1;
     }
 
     .interpolation-charts {
