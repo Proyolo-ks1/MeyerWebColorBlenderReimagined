@@ -23,6 +23,19 @@ No installation required. Explore directly in your browser.
 - Share a palette through its URL.
 - Responsive, dependency-free interface built with vanilla HTML, CSS, and JavaScript.
 
+## Run locally
+
+The app uses native JavaScript modules, so open it through a local HTTP server rather than directly as a `file://` URL. For example, run `python -m http.server 8000` in the project folder, then visit `http://localhost:8000`.
+
+## Code layout
+
+- `js/color.js` contains color conversions and interpolation spaces.
+- `js/charts.js` draws the interpolation graphs.
+- `js/color-picker.js` handles the custom and native color pickers.
+- `js/appearance.js` manages theme and background preferences.
+- `js/copy-menu.js` handles palette export formats.
+- `js/app.js` connects the modules and renders the palette.
+
 ## Project status
 
 This is an independent, ongoing reimagining. It is not affiliated with or endorsed by Eric A. Meyer.
