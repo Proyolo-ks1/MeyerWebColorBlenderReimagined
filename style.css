@@ -19,7 +19,7 @@
     --danger: #c33e4b;
     --rebecca-text: #663399;
     --rebecca-bg: #f7f1fc;
-    --rebecca-border: #d8c3eb;
+    --rebecca-border: #c399e7;
     --chart-card: #f8f9fc;
     --chart-border: #e4e6eb;
     --chart-area: #ffffff;
@@ -603,6 +603,81 @@ select {
     color: white;
 }
 
+.copy-format-wrap {
+    position: relative;
+    display: inline-flex;
+}
+
+.copy-main-button {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.copy-format-toggle {
+    min-width: 36px;
+    padding: 0 10px;
+    border-left: 1px solid rgb(255 255 255 / 32%);
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+.copy-format-menu {
+    position: absolute;
+    z-index: 6;
+    top: calc(100% + 6px);
+    right: 0;
+    display: none;
+    width: 210px;
+    padding: 5px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--surface);
+    box-shadow: 0 10px 28px rgb(20 25 35 / 16%);
+}
+
+.copy-format-menu::before {
+    position: absolute;
+    right: 0;
+    bottom: 100%;
+    left: 0;
+    height: 8px;
+    content: '';
+}
+
+.copy-format-wrap.is-open .copy-format-menu {
+    display: grid;
+}
+
+.copy-format-menu button {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    min-height: 36px;
+    padding: 0 9px;
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--control-text);
+    font-size: 12px;
+    font-weight: 600;
+    text-align: left;
+    cursor: pointer;
+}
+
+.copy-format-menu button:hover,
+.copy-format-menu button:focus-visible {
+    outline: none;
+    background: var(--subtle-surface);
+}
+
+.copy-format-menu button span {
+    color: var(--muted);
+    font-size: 10px;
+    font-weight: 400;
+}
+
 .button:hover {
     filter: brightness(.96);
 }
@@ -664,6 +739,20 @@ select {
 .swatch:hover {
     transform: translateY(-3px);
     box-shadow: var(--soft-shadow);
+}
+
+.swatch.rebecca-swatch {
+    box-shadow:
+        0 0 0 2px rgb(102 51 153 / 48%),
+        0 0 8px 3px rgb(102 51 153 / 48%),
+        0 0 22px 6px rgb(102 51 153 / 34%);
+}
+
+.swatch.rebecca-swatch:hover {
+    box-shadow:
+        0 0 0 2px rgb(102 51 153 / 58%),
+        0 0 10px 4px rgb(102 51 153 / 56%),
+        0 0 26px 8px rgb(102 51 153 / 42%);
 }
 
 .swatch-color {

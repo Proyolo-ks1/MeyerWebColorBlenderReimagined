@@ -118,7 +118,16 @@
           </div>
           <div class="actions">
             <button class="button button-secondary" id="reset" type="button">Reset</button>
-            <button class="button button-primary" id="copy-all" type="button">Copy palette</button>
+            <div class="copy-format-wrap" id="copy-format-wrap">
+              <button class="button button-primary copy-main-button" id="copy-all" type="button">Copy palette</button>
+              <button class="button button-primary copy-format-toggle" id="copy-format-toggle" type="button" aria-label="Choose copy format" aria-haspopup="menu" aria-expanded="false" aria-controls="copy-format-menu">▾</button>
+              <div class="copy-format-menu" id="copy-format-menu" role="menu" aria-label="Palette copy formats">
+                <button type="button" role="menuitem" data-copy-format="csv">CSV <span>Comma separated</span></button>
+                <button type="button" role="menuitem" data-copy-format="scsv">SCSV <span>Semicolon separated</span></button>
+                <button type="button" role="menuitem" data-copy-format="tsv">TSV <span>Tab separated</span></button>
+                <button type="button" role="menuitem" data-copy-format="lines">Lines <span>One color per line</span></button>
+              </div>
+            </div>
           </div>
           <section class="interpolation-charts" aria-label="Interpolation channel graphs">
             <figure class="channel-chart">

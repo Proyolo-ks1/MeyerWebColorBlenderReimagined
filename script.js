@@ -47,6 +47,35 @@ const pickerPairs = [
 let toastTimeout;
 let gradientBackgroundEnabled = true;
 let pageGradientColors = [];
+const APPEARANCE_STORAGE_KEY = 'meyerweb-color-blender:appearance';
+
+function saveAppearanceSettings() {
+    try {
+        localStorage.setItem(APPEARANCE_STORAGE_KEY, JSON.stringify({
+            theme: document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light',
+            gradientBackground: gradientBackgroundEnabled
+        }));
+    } catch {
+        // Keep the appearance controls usable when browser storage is unavailable.
+    }
+}
+
+function restoreAppearanceSettings() {
+    let saved;
+    try {
+        saved = JSON.parse(localStorage.getItem(APPEARANCE_STORAGE_KEY) || 'null');
+    } catch {
+        saved = null;
+    }
+
+    setTheme(saved?.theme === 'dark');
+    if (typeof saved?.gradientBackground === 'boolean') {
+        gradientBackgroundEnabled = saved.gradientBackground;
+    }
+    elements.gradientToggle.setAttribute('aria-pressed', String(gradientBackgroundEnabled));
+    elements.gradientToggle.setAttribute('aria-label', `${gradientBackgroundEnabled ? 'Disable' : 'Enable'} gradient background`);
+    elements.gradientToggleLabel.textContent = `Gradient: ${gradientBackgroundEnabled ? 'On' : 'Off'}`;
+}
 
 function setTheme(isDark) {
     document.documentElement.dataset.theme = isDark ? 'dark' : 'light';
@@ -61,7 +90,7 @@ function updatePageGradient(colors) {
     pageGradientColors = colors;
     const usesRebeccaPurple = [elements.colorA.value, elements.colorB.value].some(value => {
         const color = parseHex(value);
-        return color && toHex(color) === '#663399';
+        return color && toHex(color) === '#663399'.toUpperCase();
     });
     document.documentElement.dataset.rebecca = String(usesRebeccaPurple);
 
@@ -70,12 +99,10 @@ function updatePageGradient(colors) {
         return;
     }
 
-    const stopCount = Math.min(9, colors.length);
-    const stops = Array.from({ length: stopCount }, (_, index) => {
-        const colorIndex = Math.round(index * (colors.length - 1) / Math.max(1, stopCount - 1));
-        const { r, g, b } = parseHex(colors[colorIndex]);
-        const position = index * 100 / Math.max(1, stopCount - 1);
-        const opacity = usesRebeccaPurple && colors[colorIndex] === '#663399' ? 0.38 : 0.17;
+    const stops = colors.map((color, index) => {
+        const { r, g, b } = parseHex(color);
+        const position = index * 100 / Math.max(1, colors.length - 1);
+        const opacity = usesRebeccaPurple && color === '#663399'.toUpperCase() ? 0.5 : 0.17;
         return `rgba(${r}, ${g}, ${b}, ${opacity}) ${position}%`;
     });
     document.body.style.backgroundImage = `linear-gradient(135deg, ${stops.join(', ')})`;
@@ -535,8 +562,28 @@ function drawInterpolationChart(svg, spaceKey, start, end, steps, from, to, mix,
         appendSvg(svg, 'line', { x1: x, x2: x, y1: plot.top, y2: plot.bottom, class: 'chart-guide-line' });
     }
 
-    appendSvg(svg, 'text', { x: plot.left, y: plot.bottom + 17, class: 'chart-label', 'text-anchor': 'middle' }, '0%');
-    appendSvg(svg, 'text', { x: plot.right, y: plot.bottom + 17, class: 'chart-label', 'text-anchor': 'middle' }, '100%');
+    const gradientId = `chart-progress-${side}`;
+    const defs = appendSvg(svg, 'defs', {});
+    const progressGradient = appendSvg(defs, 'linearGradient', { id: gradientId, x1: '0%', x2: '100%', y1: '0%', y2: '0%' });
+    for (let index = 0; index <= 20; index++) {
+        const progress = index / 20;
+        appendSvg(progressGradient, 'stop', {
+            offset: `${progress * 100}%`,
+            'stop-color': toHex(colorAt(progress))
+        });
+    }
+    appendSvg(svg, 'rect', {
+        x: plot.left,
+        y: plot.bottom + 4,
+        width: plotWidth,
+        height: 7,
+        rx: 3.5,
+        fill: `url(#${gradientId})`,
+        class: 'chart-progress-strip'
+    });
+
+    appendSvg(svg, 'text', { x: plot.left, y: plot.bottom + 25, class: 'chart-label', 'text-anchor': 'middle' }, '0%');
+    appendSvg(svg, 'text', { x: plot.right, y: plot.bottom + 25, class: 'chart-label', 'text-anchor': 'middle' }, '100%');
     appendSvg(svg, 'text', { x: (plot.left + plot.right) / 2, y: chartHeight - 3, class: 'chart-label', 'text-anchor': 'middle' }, 'Interpolation progress');
 
     const lineSamples = Array.from({ length: 101 }, (_, index) => {
@@ -629,10 +676,10 @@ function showToast(message) {
     toastTimeout = setTimeout(() => elements.toast.classList.remove('visible'), 1600);
 }
 
-async function copyText(value) {
+async function copyText(value, confirmationMessage = `Copied ${value}`) {
     try {
         await navigator.clipboard.writeText(value);
-        showToast(`Copied ${value}`);
+        showToast(confirmationMessage);
     } catch {
         showToast('Clipboard access is unavailable in this browser.');
     }
@@ -681,7 +728,7 @@ function renderPalette() {
     });
 
     const colors = getPalette(start, end, Number(elements.stepsNumber.value), from, to, mix);
-    updatePageGradient(colors);
+    updatePageGradient([toHex(start), toHex(end)]);
     elements.paletteCount.textContent = `${colors.length} colors`;
     elements.gradientStrip.style.background = `linear-gradient(90deg, ${getGradientStops(start, end, from, to, mix)})`;
     const steps = Number(elements.stepsNumber.value);
@@ -703,6 +750,10 @@ function renderPalette() {
         button.type = 'button';
         button.className = 'swatch';
         button.setAttribute('aria-label', `Copy color ${color}`);
+        if (color === '#663399') {
+            button.classList.add('rebecca-swatch');
+            button.title = 'Rebecca Purple';
+        }
 
         const preview = document.createElement('span');
         preview.className = 'swatch-color';
@@ -845,9 +896,14 @@ document.addEventListener('pointerdown', event => {
     if (!event.target.closest('.picker-wrap')) {
         document.querySelectorAll('.color-popover').forEach(popover => { popover.hidden = true; });
     }
+    if (!event.target.closest('#copy-format-wrap')) setCopyMenuOpen(false);
 });
 document.addEventListener('keydown', event => {
     if (event.key === 'Escape') document.querySelectorAll('.color-popover').forEach(popover => { popover.hidden = true; });
+    if (event.key === 'Escape' && copyFormatWrap.classList.contains('is-open')) {
+        copyFormatToggle.focus();
+        setCopyMenuOpen(false);
+    }
 });
 
 elements.steps.addEventListener('input', () => {
@@ -871,6 +927,7 @@ elements.interpolationTo.addEventListener('change', renderPalette);
 elements.interpolationMix.addEventListener('input', renderPalette);
 elements.themeToggle.addEventListener('click', () => {
     setTheme(document.documentElement.dataset.theme !== 'dark');
+    saveAppearanceSettings();
 });
 elements.gradientToggle.addEventListener('click', () => {
     gradientBackgroundEnabled = !gradientBackgroundEnabled;
@@ -878,6 +935,7 @@ elements.gradientToggle.addEventListener('click', () => {
     elements.gradientToggle.setAttribute('aria-label', `${gradientBackgroundEnabled ? 'Disable' : 'Enable'} gradient background`);
     elements.gradientToggleLabel.textContent = `Gradient: ${gradientBackgroundEnabled ? 'On' : 'Off'}`;
     updatePageGradient(pageGradientColors);
+    saveAppearanceSettings();
 });
 
 document.querySelector('#swap-colors').addEventListener('click', () => {
@@ -890,12 +948,74 @@ document.querySelector('#swap-colors').addEventListener('click', () => {
 document.querySelector('#reset').addEventListener('click', reset);
 
 document.querySelector('#copy-all').addEventListener('click', () => {
-    const colors = [...elements.palette.querySelectorAll('.swatch-label')]
-        .map(label => label.textContent);
-
-    if (colors.length) copyText(colors.join('\n'));
+    copyPalette('\n', 'one color per line');
 });
 
-setTheme(false);
+function copyPalette(separator, formatName) {
+    const colors = [...elements.palette.querySelectorAll('.swatch-label')]
+        .map(label => label.textContent);
+    if (colors.length) copyText(colors.join(separator), `Copied palette (${formatName})`);
+}
+
+const copyFormatWrap = document.querySelector('#copy-format-wrap');
+const copyFormatToggle = document.querySelector('#copy-format-toggle');
+let copyMenuHovered = false;
+
+function setCopyMenuOpen(isOpen) {
+    copyFormatWrap.classList.toggle('is-open', isOpen);
+    copyFormatToggle.setAttribute('aria-expanded', String(isOpen));
+}
+
+copyFormatToggle.addEventListener('pointerenter', event => {
+    if (event.pointerType === 'mouse') {
+        copyMenuHovered = true;
+        setCopyMenuOpen(true);
+    }
+});
+copyFormatWrap.addEventListener('pointerleave', () => {
+    copyMenuHovered = false;
+    setCopyMenuOpen(false);
+});
+copyFormatWrap.addEventListener('focusin', event => {
+    if (event.target === copyFormatToggle || event.target.matches('[role="menuitem"]')) setCopyMenuOpen(true);
+});
+copyFormatWrap.addEventListener('focusout', event => {
+    if (!copyFormatWrap.contains(event.relatedTarget)) setCopyMenuOpen(false);
+});
+copyFormatToggle.addEventListener('click', event => {
+    if (event.detail === 0 || copyMenuHovered) setCopyMenuOpen(true);
+    else setCopyMenuOpen(!copyFormatWrap.classList.contains('is-open'));
+});
+copyFormatWrap.addEventListener('keydown', event => {
+    const items = [...copyFormatWrap.querySelectorAll('[role="menuitem"]')];
+    const activeIndex = items.indexOf(document.activeElement);
+    let nextIndex;
+    if (event.key === 'ArrowDown') nextIndex = (activeIndex + 1) % items.length;
+    else if (event.key === 'ArrowUp') nextIndex = (activeIndex <= 0 ? items.length : activeIndex) - 1;
+    else if (event.key === 'Home') nextIndex = 0;
+    else if (event.key === 'End') nextIndex = items.length - 1;
+    else return;
+    event.preventDefault();
+    setCopyMenuOpen(true);
+    items[nextIndex].focus();
+});
+
+const copySeparators = {
+    csv: { value: ',', label: 'CSV' },
+    scsv: { value: ';', label: 'SCSV' },
+    tsv: { value: '\t', label: 'TSV' },
+    lines: { value: '\n', label: 'one color per line' }
+};
+
+copyFormatWrap.querySelectorAll('[data-copy-format]').forEach(button => {
+    button.addEventListener('click', () => {
+        const format = copySeparators[button.dataset.copyFormat];
+        copyPalette(format.value, format.label);
+        copyFormatToggle.focus();
+        setCopyMenuOpen(false);
+    });
+});
+
+restoreAppearanceSettings();
 loadHash();
 renderPalette();
